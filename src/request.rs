@@ -1,4 +1,4 @@
-use url::Url;
+use reqwest::IntoUrl;
 
 use crate::{error::Error, spec::Response};
 
@@ -8,8 +8,8 @@ pub struct Params<'a> {
     pub max_height: Option<i32>,
 }
 
-pub async fn fetch(endpoint: impl Into<Url>, params: Params<'_>) -> Result<Response, Error> {
-    let mut url: Url = endpoint.into();
+pub async fn fetch(endpoint: impl IntoUrl, params: Params<'_>) -> Result<Response, Error> {
+    let mut url = endpoint.into_url()?;
 
     {
         let mut query = url.query_pairs_mut();
