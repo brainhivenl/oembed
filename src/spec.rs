@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Debug, Deserialize)]
@@ -19,7 +19,8 @@ pub struct Endpoint {
     pub discovery: bool,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Type {
     #[serde(rename = "photo")]
@@ -32,28 +33,32 @@ pub enum Type {
     Rich(Rich),
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Video {
     pub html: String,
     pub width: i32,
     pub height: i32,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Photo {
     pub url: String,
     pub width: i32,
     pub height: i32,
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Rich {
     pub html: String,
     pub width: i32,
     pub height: i32,
 }
 
-#[derive(Debug, Deserialize)]
+#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Response {
     #[serde(flatten)]
     pub oembed_type: Type,
