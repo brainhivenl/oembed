@@ -63,7 +63,7 @@ pub struct Response {
     #[serde(flatten)]
     pub oembed_type: Type,
     pub version: String,
-    pub title: String,
+    pub title: Option<String>,
     pub author_name: Option<String>,
     pub author_url: Option<String>,
     pub provider_name: Option<String>,
