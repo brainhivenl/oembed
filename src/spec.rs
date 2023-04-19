@@ -54,7 +54,7 @@ pub struct Photo {
 pub struct Rich {
     pub html: String,
     pub width: i32,
-    pub height: i32,
+    pub height: Option<i32>,
 }
 
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
