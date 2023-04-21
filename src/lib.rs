@@ -19,13 +19,12 @@ pub fn find_provider(url: &Url) -> Option<(&Provider, &Endpoint)> {
     PROVIDERS.iter().find_map(|p| {
         p.endpoints
             .iter()
-            .find(|e| !e.discovery && e.schemes.iter().any(|s| matches_scheme(s, url)))
+            .find(|e| !e.discovery && e.schemes.iter().any(|s| matches_scheme(s, url.as_str())))
             .map(|e| (p, e))
     })
 }
 
-fn matches_scheme(mut scheme: &str, url: &Url) -> bool {
-    let mut url = url.as_str();
+pub fn matches_scheme(mut scheme: &str, mut url: &str) -> bool {
     let Some(prefix) = scheme.find('*') else {
         return false;
     };
