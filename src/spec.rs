@@ -92,7 +92,7 @@ mod tests {
         }"#;
         let response: Response = serde_json::from_str(input).unwrap();
 
-        assert_eq!(response.title, "photo");
+        assert_eq!(response.title, Some("photo".to_string()));
         assert_eq!(
             response.oembed_type,
             Type::Photo(Photo {

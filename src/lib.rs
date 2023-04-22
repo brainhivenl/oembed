@@ -19,7 +19,7 @@ pub fn find_provider(url: &Url) -> Option<(&Provider, &Endpoint)> {
     PROVIDERS.iter().find_map(|p| {
         p.endpoints
             .iter()
-            .find(|e| !e.discovery && e.schemes.iter().any(|s| matches_scheme(s, url.as_str())))
+            .find(|e| e.schemes.iter().any(|s| matches_scheme(s, url.as_str())))
             .map(|e| (p, e))
     })
 }
@@ -58,8 +58,19 @@ mod tests {
     #[test]
     fn test_twitter_provider() {
         let url = Url::parse("https://twitter.com/user/status/1640004220000000000?s=20").unwrap();
-        let (provider, _) = find_provider(&url).unwrap();
+        let (provider, endpoint) = find_provider(&url).unwrap();
+
         assert_eq!(provider.provider_name, "Twitter");
+        assert_eq!(endpoint.url, "https://publish.twitter.com/oembed");
+    }
+
+    #[test]
+    fn test_youtube_provider() {
+        let url = Url::parse("https://youtu.be/rAn0MId").unwrap();
+        let (provider, endpoint) = find_provider(&url).unwrap();
+
+        assert_eq!(provider.provider_name, "YouTube");
+        assert_eq!(endpoint.url, "https://www.youtube.com/oembed");
     }
 
     #[test]
