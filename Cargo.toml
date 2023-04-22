@@ -1,12 +1,14 @@
 [package]
 name = "oembed"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT"
+readme = "README.md"
+keywords = ["oembed", "embed"]
+description = "Retrieve oEmbed data from a URL"
+repository = "https://github.com/dillendev/oembed/"
 
 [dependencies]
-url = "2.3"
 serde_json = "1.0"
 lazy_static = "1.4"
 schemars = { version = "0.8", optional = true }

@@ -1,5 +1,27 @@
+//! # Documentation
+//!
+//! This crate provides a simple interface for fetching oEmbed data from known providers.
+//!
+//! ## Example
+//! ```rust
+//! async fn example() {
+//!     let url = "https://twitter.com/user/status/1000000000000000000";
+//!     let (_, endpoint) = oembed::find_provider(url).expect("unknown provider");
+//!
+//!     let response = oembed::fetch(
+//!        &endpoint.url,
+//!        oembed::Params {
+//!            url,
+//!            max_width: Some(1000),
+//!            max_height: Some(500),
+//!        },
+//!     )
+//!     .await
+//!     .expect("failed to fetch oembed data");
+//! }
+//! ```
+
 use lazy_static::lazy_static;
-use url::Url;
 
 mod error;
 mod request;
@@ -15,15 +37,17 @@ lazy_static! {
             .expect("failed to load providers");
 }
 
-pub fn find_provider(url: &Url) -> Option<(&Provider, &Endpoint)> {
+/// Find the oEmbed provider and endpoint based on the URL
+pub fn find_provider(url: &str) -> Option<(&Provider, &Endpoint)> {
     PROVIDERS.iter().find_map(|p| {
         p.endpoints
             .iter()
-            .find(|e| e.schemes.iter().any(|s| matches_scheme(s, url.as_str())))
+            .find(|e| e.schemes.iter().any(|s| matches_scheme(s, url)))
             .map(|e| (p, e))
     })
 }
 
+/// Checks if the URL matches the scheme
 pub fn matches_scheme(mut scheme: &str, mut url: &str) -> bool {
     let Some(prefix) = scheme.find('*') else {
         return false;
@@ -57,7 +81,7 @@ mod tests {
 
     #[test]
     fn test_twitter_provider() {
-        let url = Url::parse("https://twitter.com/user/status/1640004220000000000?s=20").unwrap();
+        let url = "https://twitter.com/user/status/1640004220000000000?s=20";
         let (provider, endpoint) = find_provider(&url).unwrap();
 
         assert_eq!(provider.provider_name, "Twitter");
@@ -66,7 +90,7 @@ mod tests {
 
     #[test]
     fn test_youtube_provider() {
-        let url = Url::parse("https://youtu.be/rAn0MId").unwrap();
+        let url = "https://youtu.be/rAn0MId";
         let (provider, endpoint) = find_provider(&url).unwrap();
 
         assert_eq!(provider.provider_name, "YouTube");
@@ -75,7 +99,7 @@ mod tests {
 
     #[test]
     fn test_invalid() {
-        let url = Url::parse("https://twitter.nl/user/status/1640004220000000000?s=20").unwrap();
+        let url = "https://twitter.nl/user/status/1640004220000000000?s=20";
         assert!(find_provider(&url).is_none());
     }
 }

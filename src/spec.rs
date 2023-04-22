@@ -3,6 +3,9 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+/// An oEmbed provider
+/// 
+/// See the [oembed spec](https://oembed.com/#section7.1) for more information
 #[derive(Debug, Deserialize)]
 pub struct Provider {
     pub provider_name: String,
@@ -10,6 +13,7 @@ pub struct Provider {
     pub endpoints: Vec<Endpoint>,
 }
 
+/// An oEmbed provider endpoint
 #[derive(Debug, Deserialize)]
 pub struct Endpoint {
     #[serde(default)]
@@ -19,20 +23,36 @@ pub struct Endpoint {
     pub discovery: bool,
 }
 
+/// Represents one of the oEmbed data types
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Type {
+    /// Photo type
+    /// 
+    /// See section 2.3.4.1. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "photo")]
     Photo(Photo),
+    /// Video type
+    /// 
+    /// See section 2.3.4.2. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "video")]
     Video(Video),
+    /// Link type
+    /// 
+    /// See section 2.3.4.3. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "link")]
     Link,
+    /// Rich type
+    /// 
+    /// See section 2.3.4.4. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "rich")]
     Rich(Rich),
 }
 
+/// Video type
+/// 
+/// See section 2.3.4.2. of the [oembed spec](https://oembed.com) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Video {
@@ -41,6 +61,9 @@ pub struct Video {
     pub height: i32,
 }
 
+/// Photo type
+/// 
+/// See section 2.3.4.1. of the [oembed spec](https://oembed.com) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Photo {
@@ -49,6 +72,9 @@ pub struct Photo {
     pub height: i32,
 }
 
+/// Rich type
+/// 
+/// See section 2.3.4.4. of the [oembed spec](https://oembed.com) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Rich {
@@ -57,6 +83,9 @@ pub struct Rich {
     pub height: Option<i32>,
 }
 
+/// oEmbed response
+/// 
+/// See the [oembed spec](https://oembed.com/#section2.3) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Response {
