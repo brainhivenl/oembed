@@ -6,11 +6,11 @@
 //! ```rust
 //! async fn example() {
 //!     let url = "https://twitter.com/user/status/1000000000000000000";
-//!     let (_, endpoint) = oembed::find_provider(url).expect("unknown provider");
+//!     let (_, endpoint) = oembed_rs::find_provider(url).expect("unknown provider");
 //!
-//!     let response = oembed::fetch(
+//!     let response = oembed_rs::fetch(
 //!        &endpoint.url,
-//!        oembed::Params {
+//!        oembed_rs::Params {
 //!            url,
 //!            max_width: Some(1000),
 //!            max_height: Some(500),
