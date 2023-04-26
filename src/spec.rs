@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 /// An oEmbed provider
-/// 
+///
 /// See the [oembed spec](https://oembed.com/#section7.1) for more information
 #[derive(Debug, Deserialize)]
 pub struct Provider {
@@ -27,31 +27,31 @@ pub struct Endpoint {
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
-pub enum Type {
+pub enum EmbedType {
     /// Photo type
-    /// 
+    ///
     /// See section 2.3.4.1. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "photo")]
     Photo(Photo),
     /// Video type
-    /// 
+    ///
     /// See section 2.3.4.2. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "video")]
     Video(Video),
     /// Link type
-    /// 
+    ///
     /// See section 2.3.4.3. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "link")]
     Link,
     /// Rich type
-    /// 
+    ///
     /// See section 2.3.4.4. of the [oembed spec](https://oembed.com) for more information
     #[serde(rename = "rich")]
     Rich(Rich),
 }
 
 /// Video type
-/// 
+///
 /// See section 2.3.4.2. of the [oembed spec](https://oembed.com) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -62,7 +62,7 @@ pub struct Video {
 }
 
 /// Photo type
-/// 
+///
 /// See section 2.3.4.1. of the [oembed spec](https://oembed.com) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -73,7 +73,7 @@ pub struct Photo {
 }
 
 /// Rich type
-/// 
+///
 /// See section 2.3.4.4. of the [oembed spec](https://oembed.com) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -84,13 +84,13 @@ pub struct Rich {
 }
 
 /// oEmbed response
-/// 
+///
 /// See the [oembed spec](https://oembed.com/#section2.3) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Response {
+pub struct EmbedResponse {
     #[serde(flatten)]
-    pub oembed_type: Type,
+    pub oembed_type: EmbedType,
     pub version: String,
     pub title: Option<String>,
     pub author_name: Option<String>,
@@ -119,12 +119,12 @@ mod tests {
             "height": 50,
             "url": "https://example.com/photo.jpg"
         }"#;
-        let response: Response = serde_json::from_str(input).unwrap();
+        let response: EmbedResponse = serde_json::from_str(input).unwrap();
 
         assert_eq!(response.title, Some("photo".to_string()));
         assert_eq!(
             response.oembed_type,
-            Type::Photo(Photo {
+            EmbedType::Photo(Photo {
                 url: "https://example.com/photo.jpg".to_string(),
                 width: 100,
                 height: 50

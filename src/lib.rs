@@ -4,16 +4,19 @@
 //!
 //! ## Example
 //! ```rust
+//! use oembed_rs::{find_provider, fetch, ConsumerRequest};
+//!
 //! async fn example() {
 //!     let url = "https://twitter.com/user/status/1000000000000000000";
-//!     let (_, endpoint) = oembed_rs::find_provider(url).expect("unknown provider");
+//!     let (_, endpoint) = find_provider(url).expect("unknown provider");
 //!
-//!     let response = oembed_rs::fetch(
+//!     let response = fetch(
 //!        &endpoint.url,
-//!        oembed_rs::Params {
+//!        ConsumerRequest {
 //!            url,
 //!            max_width: Some(1000),
 //!            max_height: Some(500),
+//!            ..ConsumerRequest::default()
 //!        },
 //!     )
 //!     .await
@@ -28,7 +31,7 @@ mod request;
 mod spec;
 
 pub use error::Error;
-pub use request::{fetch, Params};
+pub use request::{fetch, ConsumerRequest};
 pub use spec::*;
 
 lazy_static! {
@@ -82,7 +85,7 @@ mod tests {
     #[test]
     fn test_twitter_provider() {
         let url = "https://twitter.com/user/status/1640004220000000000?s=20";
-        let (provider, endpoint) = find_provider(&url).unwrap();
+        let (provider, endpoint) = find_provider(url).unwrap();
 
         assert_eq!(provider.provider_name, "Twitter");
         assert_eq!(endpoint.url, "https://publish.twitter.com/oembed");
@@ -91,7 +94,7 @@ mod tests {
     #[test]
     fn test_youtube_provider() {
         let url = "https://youtu.be/rAn0MId";
-        let (provider, endpoint) = find_provider(&url).unwrap();
+        let (provider, endpoint) = find_provider(url).unwrap();
 
         assert_eq!(provider.provider_name, "YouTube");
         assert_eq!(endpoint.url, "https://www.youtube.com/oembed");
@@ -100,6 +103,6 @@ mod tests {
     #[test]
     fn test_invalid() {
         let url = "https://twitter.nl/user/status/1640004220000000000?s=20";
-        assert!(find_provider(&url).is_none());
+        assert!(find_provider(url).is_none());
     }
 }
