@@ -87,7 +87,7 @@ pub struct Rich {
 ///
 /// See the [oembed spec](https://oembed.com/#section2.3) for more information
 #[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct EmbedResponse {
     #[serde(flatten)]
     pub oembed_type: EmbedType,

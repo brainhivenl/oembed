@@ -59,7 +59,19 @@ impl Client {
             query.finish();
         }
 
-        Ok(self.0.get(url).send().await?.json().await?)
+        Ok(self
+            .0
+            .get(url)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await
+            .map(|mut response: EmbedResponse| {
+                // Remove the `type` field from the extra fields as we use #[serde(flatten)] twice
+                response.extra.remove("type");
+                response
+            })?)
     }
 }
 
@@ -71,4 +83,80 @@ pub async fn fetch(
     Client::new(DEFAULT_CLIENT.clone())
         .fetch(endpoint, request)
         .await
+}
+
+#[cfg(test)]
+mod tests {
+    use mockito::Server;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_fetch_success() {
+        let mut server = Server::new_async().await;
+
+        let mock = server
+            .mock("GET", "/?url=https%3A%2F%2Fexample.com")
+            .with_status(200)
+            .with_body(r#"{"version": "1.0", "type": "link"}"#)
+            .with_header("content-type", "application/json")
+            .create_async()
+            .await;
+
+        let result = fetch(
+            server.url(),
+            ConsumerRequest {
+                url: "https://example.com",
+                ..ConsumerRequest::default()
+            },
+        )
+        .await;
+        assert_eq!(
+            result.ok(),
+            Some(EmbedResponse {
+                oembed_type: crate::EmbedType::Link,
+                version: "1.0".to_string(),
+                title: None,
+                author_name: None,
+                author_url: None,
+                provider_name: None,
+                provider_url: None,
+                cache_age: None,
+                thumbnail_url: None,
+                thumbnail_width: None,
+                thumbnail_height: None,
+                extra: HashMap::default(),
+            })
+        );
+
+        mock.assert_async().await;
+    }
+
+    #[tokio::test]
+    async fn test_fetch_error() {
+        let mut server = Server::new_async().await;
+
+        let mock = server
+            .mock("GET", "/?url=https%3A%2F%2Fexample.com")
+            .with_status(404)
+            .create_async()
+            .await;
+
+        let result = fetch(
+            server.url(),
+            ConsumerRequest {
+                url: "https://example.com",
+                ..ConsumerRequest::default()
+            },
+        )
+        .await;
+
+        if let Err(Error::Reqwest(err)) = result {
+            assert_eq!(err.status(), Some(reqwest::StatusCode::NOT_FOUND))
+        } else {
+            panic!("unexpected result: {:?}", result);
+        }
+
+        mock.assert_async().await;
+    }
 }
