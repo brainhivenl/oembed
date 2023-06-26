@@ -1,0 +1,43 @@
+name: Test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up cargo cache
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: |
+            ~/.cargo
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable-x86_64-unknown-linux-gnu
+          components: llvm-tools-preview
+      - name: Setup grcov
+        run: |
+          curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-x86_64-unknown-linux-gnu.tar.bz2 | tar jxf -
+      - name: Run tests with coverage
+        env:
+          RUSTFLAGS: "-Cinstrument-coverage"
+          LLVM_PROFILE_FILE: oembed-%p-%m.profraw
+        run: |
+          cargo test &&
+            ./grcov . --binary-path ./target/debug/ -s . -t markdown --branch --ignore-not-existing --ignore "/*" -o coverage.md &&
+            cat coverage.md
+      - name: Upload coverage
+        uses: actions/upload-artifact@v3
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          name: coverage.md
+          path: ./coverage.md
