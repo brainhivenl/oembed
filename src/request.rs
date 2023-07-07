@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use lazy_static::lazy_static;
-use reqwest::IntoUrl;
+use reqwest::{header, IntoUrl};
 
 use crate::{error::Error, spec::EmbedResponse};
 
@@ -62,6 +62,7 @@ impl Client {
         Ok(self
             .0
             .get(url)
+            .header(header::USER_AGENT, "crates/oembed-rs")
             .send()
             .await?
             .error_for_status()?

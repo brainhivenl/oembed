@@ -105,6 +105,15 @@ mod tests {
     }
 
     #[test]
+    fn test_spotify() {
+        let url = "https://open.spotify.com/playlist/5R3Pzqu8SLyH9cw9WSXw91";
+        let (provider, endpoint) = find_provider(url).unwrap();
+
+        assert_eq!(provider.provider_name, "Spotify");
+        assert_eq!(endpoint.url, "https://open.spotify.com/oembed");
+    }
+
+    #[test]
     fn test_invalid() {
         let url = "https://twitter.nl/user/status/1640004220000000000?s=20";
         assert!(find_provider(url).is_none());

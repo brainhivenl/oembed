@@ -1,12 +1,12 @@
 [package]
 name = "oembed-rs"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2021"
 license = "MIT"
 readme = "README.md"
 keywords = ["oembed", "embed"]
 description = "Retrieve oEmbed data from a URL"
-repository = "https://github.com/dillendev/oembed/"
+repository = "https://github.com/brainhivenl/oembed/"
 
 [features]
 jsonschema = ["schemars"]
