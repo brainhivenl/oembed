@@ -51,31 +51,26 @@ pub fn find_provider(url: &str) -> Option<(&Provider, &Endpoint)> {
 }
 
 /// Checks if the URL matches the scheme
-pub fn matches_scheme(mut scheme: &str, mut url: &str) -> bool {
-    let Some(prefix) = scheme.find('*') else {
-        return false;
-    };
+pub fn matches_scheme(scheme: &str, mut url: &str) -> bool {
+    let mut fragments = scheme.split('*').filter(|f| !f.is_empty()).peekable();
 
-    if !url.starts_with(&scheme[..prefix]) {
-        return false;
-    }
+    while let Some(fragment) = fragments.next() {
+        if !url.starts_with(fragment) {
+            return false;
+        }
 
-    scheme = &scheme[prefix + 1..];
-    url = &url[prefix..];
+        url = &url[fragment.len()..];
 
-    while let Some(n) = scheme.find('*') {
-        let prefix = &scheme[..n];
-
-        while !url.starts_with(prefix) {
-            let Some(idx) = url.find('/') else {
+        if let Some(fragment) = fragments.peek() {
+            let Some(idx) = url.find(fragment) else {
                 return false;
             };
 
-            url = &url[idx + 1..];
+            url = &url[idx..];
         }
     }
 
-    scheme.is_empty()
+    scheme.ends_with('*') || url.is_empty()
 }
 
 #[cfg(test)]
@@ -101,8 +96,20 @@ mod tests {
     }
 
     #[test]
+    fn test_youtube_provider_with_query() {
+        let url = "https://www.youtube.com/watch?v=rAn0MId";
+        let (provider, endpoint) = find_provider(url).unwrap();
+
+        assert_eq!(provider.provider_name, "YouTube");
+        assert_eq!(endpoint.url, "https://www.youtube.com/oembed");
+    }
+
+    #[test]
     fn test_invalid() {
         let url = "https://twitter.nl/user/status/1640004220000000000?s=20";
+        assert!(find_provider(url).is_none());
+
+        let url = "https://www.youtube.com/watcx?v=test";
         assert!(find_provider(url).is_none());
     }
 }
