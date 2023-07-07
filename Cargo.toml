@@ -6,7 +6,7 @@ license = "MIT"
 readme = "README.md"
 keywords = ["oembed", "embed"]
 description = "Retrieve oEmbed data from a URL"
-repository = "https://github.com/dillendev/oembed/"
+repository = "https://github.com/brainhivenl/oembed/"
 
 [features]
 jsonschema = ["schemars"]
