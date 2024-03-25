@@ -16,7 +16,7 @@ serde_json = "1.0"
 lazy_static = "1.4"
 schemars = { version = "0.8", optional = true }
 serde = { version = "1.0", features = ["derive"] }
-reqwest = { version = "0.11.24", features = ["json"], default-features = false }
+reqwest = { version = "0.12.2", features = ["json"], default-features = false }
 
 [dev-dependencies]
 mockito = "1.1.0"
