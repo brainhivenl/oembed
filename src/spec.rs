@@ -57,8 +57,8 @@ pub enum EmbedType {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Video {
     pub html: String,
-    pub width: i32,
-    pub height: i32,
+    pub width: Option<i32>,
+    pub height: Option<i32>,
 }
 
 /// Photo type
@@ -68,8 +68,8 @@ pub struct Video {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Photo {
     pub url: String,
-    pub width: i32,
-    pub height: i32,
+    pub width: Option<i32>,
+    pub height: Option<i32>,
 }
 
 /// Rich type
@@ -79,7 +79,7 @@ pub struct Photo {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Rich {
     pub html: String,
-    pub width: i32,
+    pub width: Option<i32>,
     pub height: Option<i32>,
 }
 
@@ -126,8 +126,8 @@ mod tests {
             response.oembed_type,
             EmbedType::Photo(Photo {
                 url: "https://example.com/photo.jpg".to_string(),
-                width: 100,
-                height: 50
+                width: Some(100),
+                height: Some(50)
             })
         )
     }
